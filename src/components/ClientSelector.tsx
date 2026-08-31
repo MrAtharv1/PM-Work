@@ -47,7 +47,9 @@ export default function ClientSelector({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleCreate = async () => {
+  const handleCreate = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!search.trim()) return;
     setIsCreating(true);
     try {
@@ -86,6 +88,18 @@ export default function ClientSelector({
                 placeholder="Search clients..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (filteredClients.length === 0 && search.trim()) {
+                      handleCreate(e as unknown as React.MouseEvent);
+                    } else if (filteredClients.length > 0) {
+                      onSelect(filteredClients[0].id);
+                      setIsOpen(false);
+                      setSearch("");
+                    }
+                  }
+                }}
                 className="pl-10 h-11 bg-gray-50 border-transparent focus-visible:bg-white"
                 autoFocus
               />
@@ -100,7 +114,8 @@ export default function ClientSelector({
                     <button
                       type="button"
                       className="flex w-full items-center justify-between rounded-lg px-3 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 outline-none"
-                      onClick={() => {
+                      onMouseDown={(e) => {
+                        e.preventDefault();
                         onSelect(client.id);
                         setIsOpen(false);
                         setSearch("");
@@ -121,7 +136,7 @@ export default function ClientSelector({
                   type="button" 
                   variant="outline" 
                   className="w-full h-11"
-                  onClick={handleCreate}
+                  onMouseDown={handleCreate}
                   disabled={isCreating}
                 >
                   <Plus className="mr-2 h-4 w-4" />
