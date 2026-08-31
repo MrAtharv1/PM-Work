@@ -92,8 +92,21 @@ export async function getClientTransactions(clientId: string) {
   if (workRes.error) throw new Error(workRes.error.message);
   if (paymentRes.error) throw new Error(paymentRes.error.message);
 
-  const work = workRes.data.map((t: Record<string, unknown>) => ({ ...t, type: "WORK", sort_date: t.work_date || t.created_at }));
-  const payments = paymentRes.data.map((t: Record<string, unknown>) => ({ ...t, type: "PAYMENT", sort_date: t.payment_date || t.created_at }));
+  type DBTransaction = {
+    id: string;
+    client_id: string;
+    amount: number;
+    created_at: string;
+    work_description?: string;
+    plates?: number;
+    quantity?: number;
+    note?: string;
+    work_date?: string;
+    payment_date?: string;
+  };
+
+  const work = workRes.data.map((t: DBTransaction) => ({ ...t, type: "WORK" as const, sort_date: t.work_date || t.created_at }));
+  const payments = paymentRes.data.map((t: DBTransaction) => ({ ...t, type: "PAYMENT" as const, sort_date: t.payment_date || t.created_at }));
 
   const all = [...work, ...payments].sort((a, b) => {
     // Sort by actual date first, newest first

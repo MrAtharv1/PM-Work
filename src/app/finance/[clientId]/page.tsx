@@ -78,11 +78,11 @@ export default async function ClientFinancePage({ params }: { params: { clientId
                     <div className="font-medium text-foreground mb-1">
                       {isWork ? tx.work_description : "Payment Received"}
                     </div>
-                    {isWork && (tx.quantity > 0 || tx.plates > 0) && (
+                    {isWork && ((tx.quantity && tx.quantity > 0) || (tx.plates && tx.plates > 0)) && (
                       <div className="text-sm text-muted mb-1">
                         {[
-                          tx.quantity > 0 ? `${tx.quantity} pcs` : null,
-                          tx.plates > 0 ? `${tx.plates} plates` : null
+                          (tx.quantity && tx.quantity > 0) ? `${tx.quantity} pcs` : null,
+                          (tx.plates && tx.plates > 0) ? `${tx.plates} plates` : null
                         ].filter(Boolean).join(" · ")}
                       </div>
                     )}
