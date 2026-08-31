@@ -7,10 +7,11 @@ import { format } from "date-fns";
 
 export const dynamic = "force-dynamic";
 
-export default async function ClientFinancePage({ params }: { params: { clientId: string } }) {
+export default async function ClientFinancePage({ params }: { params: Promise<{ clientId: string }> }) {
+  const { clientId } = await params;
   const [balanceData, transactions] = await Promise.all([
-    getClientBalance(params.clientId).catch(() => null),
-    getClientTransactions(params.clientId).catch(() => []),
+    getClientBalance(clientId).catch(() => null),
+    getClientTransactions(clientId).catch(() => []),
   ]);
 
   if (!balanceData) {
@@ -106,7 +107,7 @@ export default async function ClientFinancePage({ params }: { params: { clientId
       {/* Fixed bottom action area for mobile */}
       <div className="fixed bottom-16 md:bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-border md:relative md:bg-transparent md:border-0 md:p-0 md:mt-8 z-40">
         <PaymentButton 
-          clientId={params.clientId} 
+          clientId={clientId} 
           clientName={balanceData.client_name}
           outstandingBalance={balanceData.balance}
         />
